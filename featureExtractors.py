@@ -74,8 +74,14 @@ class SimpleExtractor(FeatureExtractor):
         dx, dy = Actions.directionToVector(action)
         next_x, next_y = int(x + dx), int(y + dy)
 
-        # count the number of ghosts 1-step away
-        features["#-of-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+        # count the number of ghosts 1-step away which are not scared
+        index = 1
+        for g in ghosts:
+            if state.getGhostState(index).scaredTimer == 0 and (next_x, next_y) in Actions.getLegalNeighbors(g, walls):
+                features["#-of-ghosts-1-step-away"] += 1
+            index += 1
+
+        #features["#-of-ghosts-1-step-away"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
 
         # if there is no danger of ghosts then add the food feature
         if not features["#-of-ghosts-1-step-away"] and food[next_x][next_y]:
